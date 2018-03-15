@@ -42,13 +42,13 @@ and it is designed to accept carefully constructed HTTP requests and deliver dat
 If we put https://api.mg-rast.org into a browser window, what we see depends a little on what browser we are using.  
 
 Some browsers show us a a jumble of text.
-![Jumbled JSON from MG-RAST API](images/JumbledJSON.png)
+![Jumbled JSON from MG-RAST API](../images/JumbledJSON.png)
 
 If you see a jumble like this, search for browser add-ons or plugins that read JSON and make it look pretty.
 
 Once you can pretty-print JSON in your browser, you should see something like this:
  
-![Pretty-printed JSON from MG-RAST API](images/PrettyprintedJSON.png )
+![Pretty-printed JSON from MG-RAST API](../images/PrettyprintedJSON.png)
 
 This format is called JSON.  You can read about it on [wikipedia](http://en.wikipedia.org/wiki/JSON).   
 It is a reasonably common format for data of a wide variety of types, similar to XML or YAML.
@@ -109,7 +109,8 @@ How do I find out what parameters are required for my query?
 
 ## The API explorer
 Now we are ready to use the API Explorer.
-!(API explorer)[APIX.png]
+
+!(API explorer)[../images/APIX.png]
 
 This is a tool we made in late 2017 to help humans ask questions of the API.  
 It includes a button to build a command-line request with curl and 

@@ -110,7 +110,7 @@ How do I find out what parameters are required for my query?
 ## The API explorer
 Now we are ready to use the API Explorer.
 
-!(API explorer)[../images/APIX.png]
+![API explorer](../images/APIX.png)
 
 This is a tool we made in late 2017 to help humans ask questions of the API.  
 It includes a button to build a command-line request with curl and 

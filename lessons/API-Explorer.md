@@ -20,6 +20,7 @@ First, some MG-RAST specific jargon:
 *  **annotations** are words, text, or other symbols that are attached in at least one of these databases to a (database) protein sequence.
 *  **databases**  refers to the underlying publisher of the protein databases.  JGI, PATRIC, RefSeq, KEGG, EGGNOG, SEED are among the protein data sources.  Different databases have different specialties and scope; your mileage may vary.
 
+## Databases
 The protein-sequence databases that we've been using almost always include the name of the source organism for the protein sequence, so for any of the databases that have similarities we can deliver tables of the taxonomic distribution of protein similiarity hits.    
 
 In addition to taxonomy, some of the protein sequence databases have function data that is organized hierarchically.  For these data sources, we can deliver tables of which protein funcitons were hit, and can group functions into lower-resolution higher-signal-strength categories.   
@@ -27,6 +28,10 @@ In addition to taxonomy, some of the protein sequence databases have function da
 Many of the proteins that are in our database are in many, if not most of the underlying databases but with
 potentially different annotations.  MG-RAST does not curate the annotations, it merely parses them and delivers
 them via the webpage or API.
+
+It turns out, there is a URL that will show the list of all the MG-RAST sequence databases:
+
+http://api.metagenomics.anl.gov/m5nr/sources
 
 ## Most API results are in JSON format
 The API server is listening at 
@@ -37,23 +42,25 @@ and it is designed to accept carefully constructed HTTP requests and deliver dat
 If we put https://api.mg-rast.org into a browser window, what we see depends a little on what browser we are using.  
 
 Some browsers show us a a jumble of text.
-![Jumbled JSON from MG-RAST API](/images/JumbledJSON.png)
+![Jumbled JSON from MG-RAST API](images/JumbledJSON.png)
 
 If you see a jumble like this, search for browser add-ons or plugins that read JSON and make it look pretty.
 
 Once you can pretty-print JSON in your browser, you should see something like this:
  
-![Pretty-printed JSON from MG-RAST API](/images/PrettyprintedJSON.png )
+![Pretty-printed JSON from MG-RAST API](images/PrettyprintedJSON.png )
 
 This format is called JSON.  You can read about it on [wikipedia](http://en.wikipedia.org/wiki/JSON).   
 It is a reasonably common format for data of a wide variety of types, similar to XML or YAML.
 JSON can encode arrays (ordered lists that are accessed by element number) and ojbects (key-value pairs where 
 the key is a string and the value can be a simple data type, an array, or an object.
+Note that this is a much more complex a format than fastq or csv.
 
 This looks pretty strange.  This isn't really data, this is someone's idea of how a computer should show off 
 the list of things that it can do to users in a browser.
 
 These top-level words are the "commands" to access data within the API.
+
 * **darkmatter**  -- retrieves protein fragments that had no similarities (and will not appear downstream)
 * **download** -- delivers static data products that include the raw data and the annotation table.
 * **inbox**  -- show me data about the files that have been uploaded but not processed
@@ -71,7 +78,7 @@ These top-level words are the "commands" to access data within the API.
 
 Navigate to 
 https://api.mg-rast.org/project
-and we can poke around one of these requests
+and we can see what MG-RAST gives us in response to one of these requests.
 
 There is a top-level field called "requests" that contains an array.  Two items in the array have a field called
 "example" , while the first one does not.  The "example" field contains an array with two elements, the first of which
@@ -89,7 +96,6 @@ numbered lists elements are named lists, or key: "value"  pairs.
 
 https://api.mg-rast.org/project/mgp128?verbosity=full
 
-
 Each of these commands has parameters, some of which are optional. 
 
 https://api.mg-rast.org/project
@@ -98,10 +104,15 @@ https://api.mg-rast.org/project/mgp128
 
 https://api.mg-rast.org/project/mgp128?verbosity=full
 
+So now you are probably burning with the question, how do I get this API to do something that I want it to do?  
+How do I find out what parameters are required for my query?
+
 ## The API explorer
 Now we are ready to use the API Explorer.
+!(API explorer)[APIX.png]
 
-This is a tool to help humans ask questions of the API.  It includes a button to build a command-line request with curl and 
+This is a tool we made in late 2017 to help humans ask questions of the API.  
+It includes a button to build a command-line request with curl and 
 a command to show the result of the request in a little box in the browser window. 
 http://www.mg-rast.org/mgmain.html?mgpage=api
 

@@ -108,16 +108,21 @@ So now you are probably burning with the question, how do I get this API to do s
 How do I find out what parameters are required for my query?
 
 ## The API explorer
-Now we are ready to use the API Explorer.
+Now we are ready to use the [API Explorer](http://www.mg-rast.org/mgmain.html?mgpage=api).
 
 ![API explorer](../images/APIX.png)
 
 This is a tool we made in late 2017 to help humans ask questions of the API.  
-It includes a button to build a command-line request with curl and 
+For each API call, it displays forms for each of the parameters, and reminds you gently when
+one of the required parameters is missing.  Almost all of the required parameters have working
+defaults.  You you can build a comand-line request with curl, 
 a command to show the result of the request in a little box in the browser window. 
+
 http://www.mg-rast.org/mgmain.html?mgpage=api
 
-There is also an search explorer that has the ability to construct complex searches:
-MG-RAST Search API explorer 
+There is separately an [MG-RAST search explorer](http://www.mg-rast.org/mgmain.html?mgpage=searchapi) that 
+has the ability to construct complex searches:
+![MG-RAST Search API explorer](../images/SEARCHX.png)
+
 http://www.mg-rast.org/mgmain.html?mgpage=searchapi
 

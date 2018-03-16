@@ -3,7 +3,8 @@
 Repository for a day-and-a-half workshop on using MG-RAST for metagenomics to be
 held at University of Tennessee Knoxville March 15-16 2018.
 
-Your instructors are Robert Murdoch of UTK and Will Trimble from Argonne National Laboratory
+Your instructors are Robert Murdoch, Coordinator for the Center for Biotechnology at UTK and 
+Will Trimble from Argonne National Laboratory
 
 There is an [etherpad group chat room](https://etherpad.wikimedia.org/p/MGRAST-UTK) for this class--
 feel free to ask questions or take notes here.  It's world readable and world writeable.
@@ -21,13 +22,13 @@ feel free to ask questions or take notes here.  It's world readable and world wr
 
 * [MG-RAST API--introducing the firehose](lessons/API-Explorer.md)
 
-* MG-RAST clients (using docker)
-
 * [Sequencing-by-synthesis videos](http://www.mcs.anl.gov/~trimble/flowcell/movies) and [code](http://github.com/wltrimbl/thumbnailpolish)
 
 ### Friday, March 16, 2018
 
-* NCBI API (using docker)
+* [MG-RAST Tools](lessons/MG-RAST-Tools.md)  (using docker)
+
+* [Using the NCBI API](lessons/trimble-NCBI-lesson.md) (using docker)
 
 * open shop 
 

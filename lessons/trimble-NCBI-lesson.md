@@ -1,6 +1,8 @@
 # So you want to get some sequencing data out of NCBI?
 
-Requirements:  You'll need to start an Ubuntu EC2 instance and have root access.  The first part of this tutorial will be on your local computer and then we'll move onto the EC2 instance.  Also, this tutorial assumes that someone has talked to you about paths and you know how to change directories and execute a program on a file.  If you get an error that a program or file does not exist, make sure you are in the right path.
+Requirements:  You'll need an ubuntu linux enviroment with python (and biopython) or root access and an internet connection (to install python and biopython...)   The first part of this tutorial will be in the browser and then we'll go to linux in python.  
+
+Your linux environment could be an amazon EC2 instance or a docker container running on your local computer.  Also, this tutorial assumes that someone has talked to you about paths and you know how to change directories and execute programs on the command line.  If you get an error that a program or file does not exist, make sure you are in the right path.
 
 NCBI maintains databases for many different types of biological data.  You may be familiar with 
 * Genbank ( sequence database of researcher-submitted nucleotide & protein sequences)
@@ -23,9 +25,7 @@ To do this we will need to
 
 We could of course do this by hand.  Via the web, we could go to NCBI's [Entrez](http://www.ncbi.nlm.nih.gov/gquery), selecting genomes, we can construct the following query:
 
-    http://www.ncbi.nlm.nih.gov/genome?term=Serpentes[Organism]    
-
-[link](http://www.ncbi.nlm.nih.gov/genome?term=Serpentes[Organism])
+    [http://www.ncbi.nlm.nih.gov/genome?term=Serpentes[Organism]    ](http://www.ncbi.nlm.nih.gov/genome?term=Serpentes[Organism])
 
 By FTP, we could go to NCBI's [FTP site](ftp://ftp.ncbi.nlm.nih.gov/refseq/), find each genome, and download it manually 
 
@@ -52,7 +52,7 @@ And these methods can be accessed by placing http GET requests to NCBI's eutils 
 The following URL, for instance, returns a file called sequence.fa that contains the bare-bones Hodgkinia cicadicola Dsem genome (an insect endosymbiont 
 with unusual GC content) in fasta format::
 
-    http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=CP001226.1&rettype=fasta
+    [http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=CP001226.1&rettype=fasta](http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&id=CP001226.1&rettype=fasta)
 
 Take a look at it.  You can see the genbank formatted genome [here](http://www.ncbi.nlm.nih.gov/nuccore/CP001226.1).
 
@@ -67,9 +67,9 @@ Do you notice the difference in these two commands?  Let's breakdown the command
 *  `id=CP000962`  This fields specifies the ID of the genome you want.
 *  `rettype=gb`  This field specifies the format of data to be returned.  You'll note that this changed between the two URLs above.  In the first, we asked for only the FASTA sequence, while in the second, we asked for the Genbank file.  What you can put here depends on which database you use, and the documentation is elusive but useful: 
 
-    valid values of retmode and rettype(http://www.ncbi.nlm.nih.gov/books/NBK25499/table/chapter4.T._valid_values_of__retmode_and/?report=objectonly)
+    [valid values of retmode and rettype](http://www.ncbi.nlm.nih.gov/books/NBK25499/table/chapter4.T._valid_values_of__retmode_and/?report=objectonly]])
 
-retmode can be xml or text; rettype can be fatsta, gb, gbwithparts, and some others formats for things like paper abstracts in the the non-sequence databases.
+`retmode` can be xml or text; rettype can be fatsta, gb, gbwithparts, and some others formats for things like paper abstracts in the the non-sequence databases.
 
 NCBI's database objects can be updated, and when they are, the version number is incremented: see the discussion [here](http://www.ncbi.nlm.nih.gov/Class/MLACourse/Modules/Format/exercises/qa_accession_vs_gi.html).  Specifying the version number of the sequence can assure repeatability if obsolescence.
 
@@ -111,7 +111,7 @@ This should get the page via requests:
     dir(result)
     print(result.text)
 
-Here result is a requests object whose attributes include result.status_code and result.text  
+Here result is a requests object whose attributes include `result.status_code` and `result.text`  
 
 This should show us the results of the search -- an XML-encoded data structure which has id numbers in it.  I didn't ask for ID numbers, I asked for Serpentes, so we're not finished yet.
 
@@ -292,9 +292,9 @@ with name ACCESSION.fna
 
     for target in targets:
         fastasequence = requests.get("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&rettype=fasta&id=" + target).text
+        print("Retrieving " + target + ".fna")
         with open(target + ".fna", "w") as fh:
             fh.write(fastasequence)
-
 
 ## Comment on Genbank files
 
@@ -314,12 +314,12 @@ The structure of the Genbank file allows you to identify 16S genes.  For example
 
 You could write code to find text like 'rRNA' and '/product="16S ribosomal RNA"', grab the location of the gene, and then go to the FASTA file and grab these sequences.  To make things easy, there are existing packages to parse Genbank files.  I have the most experience with BioPython.  To begin with, let's just use BioPython to help us with our program.  
 
-First, we'll have to install BioPython on your instance and they've made that pretty easy::
+First, we'll have to install BioPython in your container if it didn't come already installed.  It's two commands in ubuntu: 
 
-    sudo apt-get update
-    sudo apt-get install python-biopython
+    apt-get update
+    apt-get install -y python-biopython
 
-Fan Yang (Iowa State University) and I wrote a script to extract 16S rRNA sequences from Genbank files, [here](https://github.com/adina/scripts-for-ngs/blob/master/parse-genbank.py).  It basically searches for text strings in the Genbank structure that is appropriate for these particular genes.  You can read more about BioPython [here](http://biopython.org/DIST/docs/tutorial/Tutorial.html) and its Genbank parser [here](http://biopython.org/DIST/docs/api/Bio.GenBank-module.html).  In this script, we are looking for an "rRNA" feature and looking for specific text in its "/product" line.  If this is true, we go through the genome sequence and extract the coordinates of these genes, providing the specific gene sequence.
+Fan Yang (Iowa State University) and Adina Howe  wrote a script to extract 16S rRNA sequences from Genbank files, [here](https://github.com/adina/scripts-for-ngs/blob/master/parse-genbank.py).  It basically searches for text strings in the Genbank structure that is appropriate for these particular genes.  You can read more about BioPython [here](http://biopython.org/DIST/docs/tutorial/Tutorial.html) and its Genbank parser [here](http://biopython.org/DIST/docs/api/Bio.GenBank-module.html).  In this script, we are looking for an "rRNA" feature and looking for specific text in its "/product" line.  If this is true, we go through the genome sequence and extract the coordinates of these genes, providing the specific gene sequence.
 
 To run this script on the Genbank file for CP000962.  Note make sure you are in the right directory for both the program and the files::
 

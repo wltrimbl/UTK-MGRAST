@@ -42,10 +42,10 @@ To do this, you're going to be using one tool in *eutils*, called *efetch*.  The
 
 The NCBI functionality is provided by these methods:
 
-#. *search engine*,   (esearch)
-#. *lists of search results*,  (esummary)
-#. *data downloads*  (efetch)
-#. *related records in other databases* (elinks)
+1. *search engine*,   (esearch)
+2. *lists of search results*,  (esummary)
+3. *data downloads*  (efetch)
+4. *related records in other databases* (elinks)
 
 And these methods can be accessed by placing http GET requests to NCBI's eutils server.  You send a carefully crafted URL, and NCBI sends you back data.
 
@@ -62,12 +62,14 @@ Other data formats of the same data are available.  The following URL will give 
 
 Do you notice the difference in these two commands?  Let's breakdown the command here:
 
-#.  `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?`  This is is the name of the server and the path to the API script on the server.  Efetch, esummary, esearch are different API scripts here.
-#.  `db=nuccore`  This command tells the NCBI API which database to search.  Other databases that the NCBI has available can be found [here](http://www.ncbi.nlm.nih.gov/books/NBK25497/table/chapter2.T._entrez_unique_identifiers_ui/?report=objectonly)
-#.  `id=CP000962`  This fields specifies the ID of the genome you want.
-#.  `rettype=gb`  This field specifies the format of data to be returned.  You'll note that this changed between the two URLs above.  In the first, we asked for only the FASTA sequence, while in the second, we asked for the Genbank file.  What you can put here depends on which database you use, and the documentation is elusive but useful: 
+*  `http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?`  This is is the name of the server and the path to the API script on the server.  Efetch, esummary, esearch are different API scripts here.
+*  `db=nuccore`  This command tells the NCBI API which **database** to search.  NCBI's databases are listed [here](http://www.ncbi.nlm.nih.gov/books/NBK25497/table/chapter2.T._entrez_unique_identifiers_ui/?report=objectonly)  and include bioproject, genome, nuccore, pubmed, pmc, and sra.  
+*  `id=CP000962`  This fields specifies the ID of the genome you want.
+*  `rettype=gb`  This field specifies the format of data to be returned.  You'll note that this changed between the two URLs above.  In the first, we asked for only the FASTA sequence, while in the second, we asked for the Genbank file.  What you can put here depends on which database you use, and the documentation is elusive but useful: 
 
     valid values of retmode and rettype(http://www.ncbi.nlm.nih.gov/books/NBK25499/table/chapter4.T._valid_values_of__retmode_and/?report=objectonly)
+
+retmode can be xml or text; rettype can be fatsta, gb, gbwithparts, and some others formats for things like paper abstracts in the the non-sequence databases.
 
 NCBI's database objects can be updated, and when they are, the version number is incremented: see the discussion [here](http://www.ncbi.nlm.nih.gov/Class/MLACourse/Modules/Format/exercises/qa_accession_vs_gi.html).  Specifying the version number of the sequence can assure repeatability if obsolescence.
 
@@ -97,24 +99,21 @@ And translate this into an ESEARCH URL
 
 So first, I need to make HTTP requests in python.  
 
-I'll use the [requests](http://www.python-requests.org/en/latest/) library instead of the built-in urllib2 because it requires fewer steps (once you 
-get it installed, cough, cough).   To install python-requests on the EC2 node run ::
+I'll use the [requests](http://www.python-requests.org/en/latest/) library to make HTTP requests from python. 
+The wltrimbl/mgrclient  docker image has this already, so we can start docker and dive into python.  
 
-    sudo apt-get install python-pip
-    sudo pip install requests 
-
-Now I'll get the page using requests::
+This should get the page via requests:
 
     import requests
     # send HTTP request to NCBI
     result = requests.get("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nuccore&term=Serpentes[Organism]")
     # dump the result to the screen
-    print result.text
+    dir(result)
+    print(result.text)
 
-Here result is a requests object -- its attributes include result.status_code and result.text.  
+Here result is a requests object whose attributes include result.status_code and result.text  
 
-This should show us the results of the search -- an XML-encoded data structure which has (otherwise useless) id numbers in it.
-i
+This should show us the results of the search -- an XML-encoded data structure which has id numbers in it.  I didn't ask for ID numbers, I asked for Serpentes, so we're not finished yet.
 
 I follow this link in my browser and.. oh.  The response is in XML.  Ok.  Let's cope with XML.
 
@@ -143,7 +142,6 @@ Well, we search the Python documentation for how to parse XML:  [XML Processing 
 There are several options; the first one is ElementTree, and it is sufficient for our purposes.
 
     import xml.etree.ElementTree as ET
-    root = ET.fromstring(result.text)
 
 
 So first we call ET.fromstring to parse the XML--load it into a data structure that we can access with ET's subroutines (called methods):
@@ -152,14 +150,14 @@ So first we call ET.fromstring to parse the XML--load it into a data structure t
 
 The canonical approach is to iterate over all of the child nodes of the "root" in the XML data structure:
 
-    for child in root.getchildren()
-        print child
+    for child in root.getchildren():
+        print(child)
 
 This gives us all the top level tags. 
 However, there is a method that just finds the tags of type that we want (where the name of the tag = "Id") and only loops over them.
 
     for idtag in root.iter("Id"):
-        print idtag
+        print(idtag)
 
 The ET child elements have the data stashed in three places, all attributes of idtag: *tag* (the string defining the name of the tag),  *attrib* (a dict of key-value pairs defined inside the <>), and *text* (the stuff between the tags)
 
@@ -175,7 +173,7 @@ or with a list comprehension::
 
     idlist = [idtag.text for idtag in root.iter("Id")]
 
-At this point idlist is a list of strings that reflect the nuccore ids of the sequences we want.  
+This makes idlist a list of strings of the nuccore ids of the sequences we want.  
 
 To turn these id numbers into something useful, we need ESUMMARY.  The following URL gives us the sequence name, the organism name, and some human-readable accession numbers for a nuccore id number 17893::
 
@@ -187,7 +185,7 @@ NCBI, aware that people don't usually want only one summary at a time, lets us q
 
 So we can build the summary url from the idlist using ",".join():
 
-     print "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id=" + ",".join(idlist) 
+     print("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nuccore&id=" + ",".join(idlist))
 
 And get it from NCBI
 
@@ -235,53 +233,67 @@ First, parse the summary XML with ET:
 Now iterate over the DocSum elements:
 
     for docsum in sumroot.iter("DocSum"):
-         print docsum
+         print(docsum)
 
 This iterates over five Docsum elements, so far so good.
 
 So now docsum is defined -- as the last docsum in the XML--so I can try iterating over its Item tags:
 
     for item in docsum.iter("Item"):
-         print item.tag, item.attrib, item.text
+         print(item.tag, item.attrib, item.text)
 
 This shows us what we saw in the browser--the field names are in the Name element of the attributes and the data is in the .text attribute.
 Let us turn this into a dict:
 
-    itemhash = {}
+    itemdict = {}
     for item in docsum.iter("Item"):
-       itemhash[item.attrib["Name"]] = item.text
+       itemdict[item.attrib["Name"]] = item.text
 
-And now we have a hash that contains all the for one of the DocSums.
+And now we have a dict that contains all the data fields the for one of the DocSums.
 To get all the docsums, let us create a hash of hashes::
 
-    summaryhash = {}
+    docsumdata = {}
     for docsum in sumroot.iter("DocSum"):
         docsumid = docsum.iter("Id").next().text
-        summaryhash[docsumid] ={}
-        for item in tocsin.iter("Item"):
+        docsumdata[docsumid] ={}
+        for item in docsum.iter("Item"):
             if item.text != None:
-                summaryhash[docsumid][item.attrib["Name"]] = item.text
+                docsumdata[docsumid][item.attrib["Name"]] = item.text
 
-Now all the data is in a hash of hashes.  Let us construct a list of fields:
-
-    keylist = list(summaryhash[docsumid].keys())
-    print "Id\t" + "\t".join(keylist)
-
-That shows me the field names, and a loop through the docsumids gives me the entries:
-
-    for docsumid in summaryhash.keys():
-        fields = [summaryhash[docsumid][k] for k in keylist] 
-        print docsumid + "\t" + "\t".join(fields)
-
-Whew.  Actually, wait a sec.. all the fields don't seem to be there.  Right. I constructed
-keylist just using the fields that were in the last docsum.
+Now all the data is in a hash of hashes.  Let us construct a list of all the keys to all the fields:
 
     keylist = set()
-    for docsumid in summaryhash.keys():
-        keylist.add(summaryhash[docsumid].keys())
-   
+    for docsumid in docsumdata.keys():
+        for key in docsumdata[docsumid].keys():
+            keylist.add(key)
+   print("\t".join(keylist))
+
+And now I can get all the fields for each of the docsumids:
+
+    for docsumid in docsumdata.keys():
+        fields = [docsumdata[docsumid][k] for k in keylist] 
+        print(docsumid + "\t" + "\t".join(fields))
 
 Now we have accession numbers, time to download the datasets.
+
+    for docsumid in docsumdata.keys():
+        print(docsumdata[docsumid]["AccessionVersion"] + "\t" + docsumdata[docsumid]["Title"])
+
+I'll look at the last four, partial 16S genes apparently from snakes.
+
+targets = [ "MG012885.1", "MG012884.1", "MG012887.1", "MG012886.1"]
+
+I can download the sequences with a query like 
+
+http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&rettype=fasta&id=CP001226.1
+
+This snippet makes a query like this for every one of the IDs in targets and saves the NCBI API's response to a file 
+with name ACCESSION.fna
+
+    for target in targets:
+        fastasequence = requests.get("http://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=nuccore&rettype=fasta&id=" + target).text
+        with open(target + ".fna", "w") as fh:
+            fh.write(fastasequence)
 
 
 ## Comment on Genbank files

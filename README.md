@@ -14,7 +14,7 @@ feel free to ask questions or take notes here.  It's world readable and world wr
 * [Things you should know about cloud computing](https://2014-argonne-soils-automation-workshop.readthedocs.io/en/latest/_static/argonne-cloud-computing.pptx.pdf)
 * [Sequences, computing, MG-RAST and you](presentations/pipeline.pdf)
 
-* MG-RAST website walkthrough 
+* [MG-RAST website walkthrough](http://github.com/wltrimbl/UTK-MGRAST/blob/master/MG-RAST-UTK-2018.md)
 
 * [Sequencing core horror stories](http://github.com/wltrimbl/whatcouldgowrong)
 

@@ -1,6 +1,6 @@
 # So you want to get some sequencing data out of NCBI?
 
-Requirements:  You'll need an ubuntu linux enviroment with python (and biopython) or root access and an internet connection (to install python and biopython...)   The first part of this tutorial will be in the browser and then we'll go to linux in python.  
+Requirements:  You'll need an ubuntu linux environment with python (and biopython) or root access and an internet connection (to install python and biopython...)   The first part of this tutorial will be in the browser and then we'll go to linux in python.  
 
 Your linux environment could be an amazon EC2 instance or a docker container running on your local computer.  Also, this tutorial assumes that someone has talked to you about paths and you know how to change directories and execute programs on the command line.  If you get an error that a program or file does not exist, make sure you are in the right path.
 
@@ -302,7 +302,7 @@ Genbank files have a special structure to them.  You can look at it and figure i
 
     grep 16S *gbk
 
-This should look somewhat familiar from your shell lesson, but basically we're looking for anylines that contain the character "16S" in any Genbank file we've downloaded.  Note that you'll have to run this in the directory where you downloaded these files.
+This should look somewhat familiar from your shell lesson, but basically we're looking for any lines that contain the character "16S" in any Genbank file we've downloaded.  Note that you'll have to run this in the directory where you downloaded these files.
 
 The structure of the Genbank file allows you to identify 16S genes.  For example, ::
 

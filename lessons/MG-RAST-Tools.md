@@ -4,7 +4,7 @@ MG-RAST-Tools is a collection of python scripts and python module to talk to the
 
 It is hosted at  http://github.com/MG-RAST/MG-RAST-Tools
 
-## A syncrhonous API queries
+## A synchronous API queries
 
 While some requests start providing data immediately, some requests (like http://api.mg-rast.org/darkmatter and http://api.mg-rast.org/matrix) do not have the results ready in time to respond to an HTTP GET request.
 
@@ -33,7 +33,7 @@ If I make the query a few minutes later, it includes a field with the URL of the
 	md5	"15baa92ab0351969d2714bab73797f8c"
 	url	"http://shock.metagenomics.anl.gov/preauth/eZmBpBum5n6dPDuA2xfm"
 
-We have a tool that will make repeated (not too frequent) requests to the API to ask if our calcuation is done.  
+We have a tool that will make repeated (not too frequent) requests to the API to ask if our calculation is done.  
 
     mg-query.py  <URL>  # ask repeatedly for slow-to-be-delivered data
 
@@ -64,7 +64,7 @@ and the MG-RAST-Tools will automatically recognize it and add it to the requests
 
 One of the ways out of the "grumpy sysadmin who won't install the tools you need / the tools you want / the tools in the last tabloid scientific spectacular" problem is to rent a server from Amazon.
 
-Another, applicable if your compute is cheap, is to use docker containers.  These are linux filesystems/operating systems that can run on your laotop, on a server, or on an EC2 instance.  They are big to download and store  (100Mbytes - few Gbytes, if you don't try to install sequence databases on them) but they provide an environment where scientific tools for linux work--without breaking and without breaking anything in the host sytem.
+Another, applicable if your compute is cheap, is to use docker containers.  These are linux filesystems/operating systems that can run on your laptop, on a server, or on an EC2 instance.  They are big to download and store  (100Mbytes - few Gbytes, if you don't try to install sequence databases on them) but they provide an environment where scientific tools for linux work--without breaking and without breaking anything in the host sytem.
 
 ## Let's go
 
@@ -121,7 +121,7 @@ gene from all of the shotgun datasets in (your favorite environment).
 
 1.  Find a list of suitable shotgun datasets
 2.  Choose a database and an annotation to target
-3.  Find the API call that delivers sequences that have a particular annotaiton
+3.  Find the API call that delivers sequences that have a particular annotation
 4.  Issue the API call once for each dataset in the list from step 1
 
 
